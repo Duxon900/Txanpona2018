@@ -4,10 +4,11 @@ import javafx.scene.image.Image;
 
 public class Txanpon {
     private int id;
-    private String data;
-    private double balioa;
+    private String time;
+    private double price;
+    private float volume;
+
     private String mota;
-    private float bolumena;
     private Image portaera;
 
 
@@ -28,20 +29,20 @@ public class Txanpon {
         this.id = id;
     }
 
-    public String getData() {
-        return data;
+    public String getTime() {
+        return time;
     }
 
-    public void setData(String data) {
-        this.data = data;
+    public void setTime(String time) {
+        this.time = time;
     }
 
-    public double getBalioa() {
-        return balioa;
+    public double getPrice() {
+        return price;
     }
 
-    public void setBalioa(double balioa) {
-        this.balioa = balioa;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public String getMota() {
@@ -52,11 +53,11 @@ public class Txanpon {
         this.mota = mota;
     }
 
-    public float getBolumena() {
-        return bolumena;
+    public float getVolume() {
+        return volume;
     }
 
-    public void setBolumena(float bolumena) {
-        this.bolumena = bolumena;
+    public void setVolume(float bolumena) {
+        this.volume = bolumena;
     }
 }

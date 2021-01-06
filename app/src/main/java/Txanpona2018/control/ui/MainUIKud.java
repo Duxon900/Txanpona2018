@@ -2,13 +2,13 @@ package Txanpona2018.control.ui;
 
 import Txanpona2018.Txanpon;
 import Txanpona2018.control.db.DBKudeatzaile;
+import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -17,11 +17,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class MainUIKud implements Initializable {
@@ -55,9 +57,19 @@ public class MainUIKud implements Initializable {
     private float ltc=0;
     private float eth=0;
 
+    ObservableList<Txanpon> emaitza= FXCollections.observableArrayList();
+
     private class TxanponIzenak{
         private String izena;
         private String laburdura;
+
+        public String getLaburdura() {
+            return laburdura;
+        }
+
+        public void setLaburdura(String laburdura) {
+            this.laburdura = laburdura;
+        }
 
         public TxanponIzenak(String izena, String laburdura) {
             this.izena = izena;
@@ -82,9 +94,9 @@ public class MainUIKud implements Initializable {
 
         zutID.setCellValueFactory(new PropertyValueFactory<>("id"));
         zutTxanpon.setCellValueFactory(new PropertyValueFactory<>("mota"));
-        zutNoiz.setCellValueFactory(new PropertyValueFactory<>("data"));
-        zutZenbat.setCellValueFactory(new PropertyValueFactory<>("balioa"));
-        zutBolumena.setCellValueFactory(new PropertyValueFactory<>("bolumena"));
+        zutNoiz.setCellValueFactory(new PropertyValueFactory<>("time"));
+        zutZenbat.setCellValueFactory(new PropertyValueFactory<>("price"));
+        zutBolumena.setCellValueFactory(new PropertyValueFactory<>("volume"));
         zutPortaera.setCellValueFactory(new PropertyValueFactory<>("portaera"));
 
 
@@ -113,15 +125,14 @@ public class MainUIKud implements Initializable {
     }
 
     private void datuakSartu(ResultSet resultSet) throws SQLException {
-        ObservableList<Txanpon> emaitza= FXCollections.observableArrayList();
 
         while(resultSet.next()){
             Txanpon txanpon=new Txanpon();
             txanpon.setId(resultSet.getInt("id"));
-            txanpon.setData(resultSet.getString("data"));
-            txanpon.setBalioa(resultSet.getDouble("balioa"));
+            txanpon.setTime(resultSet.getString("data"));
+            txanpon.setPrice(resultSet.getDouble("balioa"));
             txanpon.setMota(resultSet.getString("mota"));
-            txanpon.setBolumena(resultSet.getFloat("bolumena"));
+            txanpon.setVolume(resultSet.getFloat("bolumena"));
             emaitza.add(txanpon);
 
             Image image=lortuPortaera(txanpon);
@@ -133,17 +144,17 @@ public class MainUIKud implements Initializable {
     private Image lortuPortaera(Txanpon txanpon) {
         Image irudia = null;
         if(txanpon.getMota().equals("BTC")){
-            irudia=kalkulatuIrudia(btc,txanpon.getBolumena());
-            btc=txanpon.getBolumena();
+            irudia=kalkulatuIrudia(btc,txanpon.getVolume());
+            btc=txanpon.getVolume();
         }
 
         else if(txanpon.getMota().equals("LTC")){
-            irudia=kalkulatuIrudia(ltc,txanpon.getBolumena());
-            ltc=txanpon.getBolumena();
+            irudia=kalkulatuIrudia(ltc,txanpon.getVolume());
+            ltc=txanpon.getVolume();
         }
         else {
-            irudia=kalkulatuIrudia(eth,txanpon.getBolumena());
-            eth=txanpon.getBolumena();
+            irudia=kalkulatuIrudia(eth,txanpon.getVolume());
+            eth=txanpon.getVolume();
         }
 
         return irudia;
@@ -170,6 +181,36 @@ public class MainUIKud implements Initializable {
 
     @FXML
     void onClickSartu(ActionEvent event) {
+        var txanpontxoa=readFromUrl(cmbox.getValue().getLaburdura());
 
+        String data=txanpontxoa.getTime();
+        data=data.replace("T"," ");
+        data=data.replaceAll("\\.\\d+\\w",""); //regex erabili dut ez naiz timestamp erabiltzeko kapaza izan:(
+        txanpontxoa.setTime(data);
+
+        txanpontxoa.setMota(cmbox.getValue().getLaburdura());
+        Image image=lortuPortaera(txanpontxoa);
+        txanpontxoa.setPortaera(image);
+
+        emaitza.add(txanpontxoa);
+    }
+
+    public static Txanpon readFromUrl(String txanpona) {
+        txanpona = txanpona.toLowerCase();
+        String inputLine = "";
+
+        try {
+            URL coinMarket = new URL("https://api.gdax.com/products/" + txanpona + "-eur/ticker");
+            URLConnection yc = coinMarket.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
+            new InputStreamReader(coinMarket.openStream());
+
+            inputLine = in.readLine();
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Gson gson = new Gson();
+        return gson.fromJson(inputLine, Txanpon.class);
     }
 }
