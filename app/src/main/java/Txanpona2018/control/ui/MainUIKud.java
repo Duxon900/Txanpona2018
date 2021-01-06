@@ -176,7 +176,19 @@ public class MainUIKud implements Initializable {
 
     @FXML
     void onClickGorde(ActionEvent event) {
+        //ezabatu elementu guztiak
+        DBKudeatzaile.getInstantzia().execSQL("delete from txanponak");
 
+        //sartu elementu guztiak berriz
+        emaitza.forEach(elem->{
+            String query="insert into txanponak (data,balioa,mota,bolumena)"+
+                    " values('"+
+                    elem.getTime()+"','"+
+                    elem.getPrice()+"','"+
+                    elem.getMota()+"','"+
+                    elem.getVolume()+"')";
+            DBKudeatzaile.getInstantzia().execSQL(query);
+        });
     }
 
     @FXML
