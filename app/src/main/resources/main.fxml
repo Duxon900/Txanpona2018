@@ -6,7 +6,6 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <AnchorPane prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Txanpona2018.control.ui.MainUIKud">
    <children>
       <TableView fx:id="taula" layoutX="54.0" layoutY="267.0" prefHeight="452.0" prefWidth="493.0">
@@ -22,8 +21,8 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Button layoutX="109.0" layoutY="116.0" mnemonicParsing="false" text="Sartu" />
-      <Button layoutX="261.0" layoutY="116.0" mnemonicParsing="false" text="Gorde" />
-      <ComboBox layoutX="397.0" layoutY="116.0" prefWidth="150.0" />
+      <Button layoutX="109.0" layoutY="116.0" mnemonicParsing="false" onAction="#onClickSartu" text="Sartu" />
+      <Button layoutX="261.0" layoutY="116.0" mnemonicParsing="false" onAction="#onClickGorde" text="Gorde" />
+      <ComboBox fx:id="cmbox" layoutX="397.0" layoutY="116.0" prefWidth="150.0" />
    </children>
 </AnchorPane>

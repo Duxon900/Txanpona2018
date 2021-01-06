@@ -1,11 +1,24 @@
 package Txanpona2018;
 
+import javafx.scene.image.Image;
+
 public class Txanpon {
     private int id;
     private String data;
     private double balioa;
     private String mota;
     private float bolumena;
+    private Image portaera;
+
+
+    public Image getPortaera() {
+        return portaera;
+    }
+
+    public void setPortaera(Image portaera) {
+        this.portaera = portaera;
+    }
+
 
     public int getId() {
         return id;
